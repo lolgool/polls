@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Acceso</title>
+    <style>
+        body { font-family: sans-serif; display: flex; justify-content: center; align-items: center; height: 100vh; background: #f4f4f9; margin: 0; }
+        .container { background: white; padding: 30px; border-radius: 10px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); display: flex; gap: 40px; flex-wrap: wrap; }
+        .box { width: 250px; }
+        input, select, button { width: 100%; padding: 10px; margin: 5px 0; box-sizing: border-box; }
+        button { background: #007bff; color: white; border: none; cursor: pointer; border-radius: 5px; }
+        button.reg { background: #28a745; }
+        h2 { text-align: center; margin-top: 0; }
+        @media (max-width: 600px) { .container { flex-direction: column; gap: 20px; } }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="box">
+            <h2>Entrar</h2>
+            <form action="/login" method="POST">
+                <input type="text" name="username" placeholder="Usuario" required>
+                <input type="password" name="password" placeholder="Contraseña" required>
+                <button type="submit">Iniciar Sesión</button>
+            </form>
+        </div>
+        <div style="border-left: 1px solid #ddd;"></div>
+        <div class="box">
+            <h2>Registrarse</h2>
+            <form action="/register" method="POST">
+                <input type="text" name="username" placeholder="Nuevo Usuario" required>
+                <input type="password" name="password" placeholder="Nueva Contraseña" required>
+                <select name="role">
+                    <option value="user">Votante</option>
+                    <option value="admin">Administrador</option>
+                </select>
+                <button type="submit" class="reg">Crear Cuenta</button>
+            </form>
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Votar</title>
+    <script src="/socket.io/socket.io.js"></script>
+    <style>
+        body { font-family: sans-serif; text-align: center; padding: 20px; background-color: transparent; }
+        h1 { color: #333; }
+        button {
+            display: block; width: 100%; max-width: 400px; margin: 15px auto; padding: 15px;
+            font-size: 18px; cursor: pointer; background-color: #007bff; color: white;
+            border: none; border-radius: 8px; transition: 0.2s;
+        }
+        button:hover { background-color: #0056b3; }
+        button:active { transform: scale(0.98); }
+        .logout { margin-top: 50px; display: inline-block; color: #888; text-decoration: none; }
+    </style>
+</head>
+<body>
+    <h1>🗳️ Vota Ahora</h1>
+    <h2 id="pregunta">Cargando...</h2>
+    <div id="botones"></div>
+    
+    <a href="/logout" class="logout">Salir</a>
+
+    <script>
+        const socket = io();
+        socket.on('actualizarDatos', (data) => {
+            document.getElementById('pregunta').innerText = data.pregunta;
+            const div = document.getElementById('botones');
+            div.innerHTML = '';
+            
+            data.opciones.forEach(op => {
+                const btn = document.createElement('button');
+                btn.innerText = op.texto;
+                btn.onclick = () => {
+                    socket.emit('votar', op.id);
+                    // Opcional: Ocultar botones tras votar
+                    // div.innerHTML = '<h3>¡Gracias por tu voto!</h3>';
+                };
+                div.appendChild(btn);
+            });
+        });
+    </script>
+</body>
+</html>
