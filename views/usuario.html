@@ -14,34 +14,62 @@
             border: none; border-radius: 8px; transition: 0.2s;
         }
         button:hover { background-color: #0056b3; }
-        button:active { transform: scale(0.98); }
+        /* Clase para cuando ya votaste */
+        .voto-registrado { background-color: #28a745; cursor: default; }
+        .oculto { display: none; }
         .logout { margin-top: 50px; display: inline-block; color: #888; text-decoration: none; }
     </style>
 </head>
 <body>
     <h1>🗳️ Vota Ahora</h1>
     <h2 id="pregunta">Cargando...</h2>
+    
     <div id="botones"></div>
+
+    <div id="mensaje-voto" class="oculto">
+        <h3>✅ ¡Ya has votado!</h3>
+        <p>Espera a la siguiente encuesta.</p>
+    </div>
     
     <a href="/logout" class="logout">Salir</a>
 
     <script>
         const socket = io();
+        let miUsuario = '';
+
+        // 1. Preguntamos al servidor quiénes somos al entrar
+        fetch('/api/quien-soy')
+            .then(res => res.json())
+            .then(data => {
+                miUsuario = data.username;
+            });
+
         socket.on('actualizarDatos', (data) => {
             document.getElementById('pregunta').innerText = data.pregunta;
-            const div = document.getElementById('botones');
-            div.innerHTML = '';
+            const divBotones = document.getElementById('botones');
+            const divMensaje = document.getElementById('mensaje-voto');
             
-            data.opciones.forEach(op => {
-                const btn = document.createElement('button');
-                btn.innerText = op.texto;
-                btn.onclick = () => {
-                    socket.emit('votar', op.id);
-                    // Opcional: Ocultar botones tras votar
-                    // div.innerHTML = '<h3>¡Gracias por tu voto!</h3>';
-                };
-                div.appendChild(btn);
-            });
+            divBotones.innerHTML = '';
+
+            // 2. Verificamos si MI usuario ya está en la lista de los que votaron
+            if (data.votantes && data.votantes.includes(miUsuario)) {
+                divBotones.style.display = 'none'; // Ocultar botones
+                divMensaje.style.display = 'block'; // Mostrar mensaje "Ya votaste"
+            } else {
+                divBotones.style.display = 'block';
+                divMensaje.style.display = 'none';
+
+                // Generar botones si no he votado
+                data.opciones.forEach(op => {
+                    const btn = document.createElement('button');
+                    btn.innerText = op.texto;
+                    btn.onclick = () => {
+                        // Enviamos el ID de la opción Y mi usuario
+                        socket.emit('votar', { idOpcion: op.id, usuario: miUsuario });
+                    };
+                    divBotones.appendChild(btn);
+                });
+            }
         });
     </script>
 </body>

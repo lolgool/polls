@@ -5,6 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Panel</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.0.0"></script>
+    
     <script src="/socket.io/socket.io.js"></script>
     <style>
         body { font-family: sans-serif; padding: 20px; max-width: 800px; margin: 0 auto; }
@@ -31,6 +33,9 @@
     <canvas id="miGrafica" style="margin-top: 30px;"></canvas>
 
     <script>
+        // Registramos el plugin para poder usarlo
+        Chart.register(ChartDataLabels);
+
         const socket = io();
         let chart;
 
@@ -58,9 +63,27 @@
                     type: 'bar',
                     data: {
                         labels: labels,
-                        datasets: [{ label: data.pregunta, data: values, backgroundColor: '#36A2EB' }]
+                        datasets: [{ 
+                            label: data.pregunta, 
+                            data: values, 
+                            backgroundColor: '#36A2EB' 
+                        }]
                     },
-                    options: { scales: { y: { beginAtZero: true, ticks: { stepSize: 1 } } } }
+                    options: {
+                        scales: { y: { beginAtZero: true, ticks: { stepSize: 1 } } },
+                        plugins: {
+                            // CONFIGURACIÓN DE LOS NÚMEROS EN BARRAS
+                            datalabels: {
+                                color: 'white', // Color del número
+                                anchor: 'center', // Posición (end, center, start)
+                                align: 'center',
+                                font: {
+                                    weight: 'bold',
+                                    size: 20
+                                }
+                            }
+                        }
+                    }
                 });
             }
         });
